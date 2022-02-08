@@ -1,38 +1,25 @@
-.App {
-  text-align: center;
+.keyboard-row {
+
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.keyboard-key:active {
+  background-color: #333;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.done .wordle-box {
+  background-color: #86888a;
+  color: #fff;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+.wordle-box {
+  text-transform: uppercase;
+  font-weight: bold;
 }
 
-.App-link {
-  color: #61dafb;
+.wordle-box.exists {
+  background-color: #c9b458;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.wordle-box.correct {
+  background-color: #538d4e;
 }
