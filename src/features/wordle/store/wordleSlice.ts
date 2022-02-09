@@ -3,6 +3,7 @@ import {RootState} from '../../../store/store';
 import {arrayWithLength, decode, encode, guessCount, wordLength} from '../../../config';
 
 export enum LetterPos {
+    unused = 'unused',
     notFound = 'not-found',
     exists = 'exists',
     correct = 'correct',
@@ -13,6 +14,7 @@ export interface CharUsage {
 }
 
 const letterPosMap = {
+    [LetterPos.unused]: -1,
     [LetterPos.notFound]: 0,
     [LetterPos.exists]: 1,
     [LetterPos.correct]: 2,
@@ -27,7 +29,7 @@ function getBestState(char: string, input: WordleGuessChar[]): WordleGuessChar {
         }
     }, {
         char: char,
-        state: LetterPos.notFound,
+        state: LetterPos.unused,
     });
 }
 
@@ -45,13 +47,6 @@ function getWordGuessResult(guess: string[], word: string[]): GuessChar[] {
     });
 }
 
-export interface WordleState {
-    guesses: GuessChar[][];
-    currentInput: string[];
-    word: string,
-    charUsage: CharUsage;
-}
-
 export interface GuessChar {
     char: string;
     state: LetterPos;
@@ -67,10 +62,17 @@ export interface WordleGuessChar {
     state: LetterPos;
 }
 
+export interface WordleState {
+    guesses: GuessChar[][];
+    currentInput: string[];
+    word: string,
+    charUsage: CharUsage;
+}
+
 const initialState: WordleState = {
     currentInput: [],
     guesses: [],
-    word: '',
+    word: 'katze',
     charUsage: {},
 };
 
@@ -130,12 +132,33 @@ export const wordleSlice = createSlice({
             } else {
                 state.word = '';
             }
+        },
+        wordleClear: (state) => {
+            state.currentInput = [];
+            state.guesses = [];
+            state.charUsage = {};
+            state.word = '';
         }
     }
 });
 
 export const isValidWord = (state: RootState) => state.wordle.word.length === wordLength;
 export const selectLetters = (state: RootState) => state.wordle.charUsage;
+export const selectWord = (state: RootState) => state.wordle.word;
+export const selectIsSuccess = (state: RootState) => {
+    const wordle = state.wordle;
+
+    if (wordle.guesses.length >= 1) {
+        const lastGuess = wordle.guesses[wordle.guesses.length - 1];
+
+        return wordle.word === lastGuess.join('');
+    }
+}
+
+export const selectIsLost = (state: RootState) => {
+    const wordle = state.wordle;
+    return wordle.guesses.length === guessCount && !selectIsSuccess(state);
+}
 export const selectWordleRows = (state: RootState): WordleGuessRow[] => {
     const result: WordleGuessRow[] = [];
 
@@ -170,6 +193,12 @@ export const selectWordleRows = (state: RootState): WordleGuessRow[] => {
 
     return result;
 };
+
+export const selectStats = (state: RootState) => {
+    return {
+        guesses: state.wordle.guesses,
+    };
+}
 
 export const {wordleType, wordleDelete, wordleEnter, wordleStart} = wordleSlice.actions;
 export default wordleSlice.reducer;

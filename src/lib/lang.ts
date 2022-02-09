@@ -11,6 +11,8 @@ export const lang: {
         createYourOwn: 'Erstelle ein Rästel!',
         errorStartFailed: 'Irgendwas ist schief gelaufen! Bitte lass dir einen neuen Link schicken.',
         playTitle: 'Rätsel',
+        failureTitle: 'Verloren!',
+        failureText: 'Das gesuchte Wort war:'
     }
 };
 

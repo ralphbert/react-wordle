@@ -11,17 +11,19 @@ import {BrowserRouter, Route, Routes} from 'react-router-dom';
 import {Wordle} from './features/wordle/Wordle';
 import {Create} from './features/create/Create';
 import {Start} from './features/start/Start';
+import {NotFound} from './features/not-found/NotFound';
 
 ReactDOM.render(
     <React.StrictMode>
         <Provider store={store}>
-            <BrowserRouter>
+            <BrowserRouter basename={process.env.BASENAME}>
                 <Routes>
                     <Route path="" element={<App/>}>
                         <Route path="start" element={<Start/>}/>
                         <Route path="play" element={<Wordle/>}/>
                         <Route index element={<Create/>}/>
                     </Route>
+                    <Route path="*" element={ <NotFound /> } />
                 </Routes>
             </BrowserRouter>
         </Provider>

@@ -4,7 +4,7 @@ import wordleSlice from '../features/wordle/store/wordleSlice';
 export const store = configureStore({
     reducer: {
         wordle: wordleSlice,
-    }
+    },
 });
 
 
