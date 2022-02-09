@@ -1,21 +1,12 @@
-import { useAppDispatch } from "../../store/hooks";
-import { wordleType } from "./store/wordleSlice";
+import { chars } from "../../config";
+import { useAppSelector } from "../../store/hooks";
+import { selectLetters } from "./store/wordleSlice";
 
-export function Keyboard() {
-  const chars = [
-    'qwertzuiop'
-      .toUpperCase()
-      .split(''),
-    'asdfghjkl'
-      .toUpperCase()
-      .split(''),
-    'yxcvbnm'
-      .toUpperCase()
-      .split('')
-  ];
+export interface KeyboardProps {
+  onEnter : (char : string) => void;
+}
 
-  const dispatch = useAppDispatch();
-
+export function Keyboard({onEnter} : KeyboardProps) {
   const keyboardStyle = {};
 
   const rowStyle = {
@@ -28,7 +19,6 @@ export function Keyboard() {
 
   const keyStyle = {
     borderRadius: '4px',
-    backgroundColor: '#ccc',
     padding: '1em 0.75em',
     border: 'none',
     fontWeight: 'bold',
@@ -37,9 +27,11 @@ export function Keyboard() {
   }
 
   function onKeyPress(code : string) {
-    console.log('code', code)
-    dispatch(wordleType(code));
+    onEnter(code);
+    // dispatch(wordleType(code));
   }
+
+  const letters = useAppSelector(selectLetters);
 
   return (
     <div className="keyboard" style={keyboardStyle}>
@@ -47,7 +39,7 @@ export function Keyboard() {
         {row.map((char, charIndex) => <button
           onClick={() => onKeyPress(char)}
           type="button"
-          className="keyboard-key"
+          className={"keyboard-key " + letters[char]}
           style={keyStyle}
           key={charIndex}>{char}</button>)}
         {rowIndex === 1

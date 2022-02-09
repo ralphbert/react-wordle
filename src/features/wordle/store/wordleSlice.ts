@@ -1,10 +1,57 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../../../store/store";
 
+export enum LetterPos {
+  notFound = 'not-found',
+  exists = 'exists',
+  correct = 'correct',
+}
+
+const letterPosMap = {
+  [LetterPos.notFound]: 0,
+  [LetterPos.exists]: 1,
+  [LetterPos.correct]: 2,
+};
+
+function getBestState(char: string, input: WordleGuessChar[]): WordleGuessChar {
+  return input.filter(i => i.char === char).reduce((best, cur) => {
+    if (letterPosMap[best.state] < letterPosMap[cur.state]) {
+      return cur;
+    } else {
+      return best;
+    }
+  }, {
+    char: char,
+    state: LetterPos.notFound,
+  });
+}
+
+function getWordGuessResult(guess: string[], word: string[]): GuessChar[] {
+  return guess.map((char, i) => {
+    let letterPos = LetterPos.notFound;
+
+    if (word[i] === char) {
+      letterPos = LetterPos.correct;
+    } else if (word.includes(char)) {
+      letterPos = LetterPos.exists;
+    }
+
+    return { char, state: letterPos };
+  });
+}
+
 export interface WordleState {
-  guesses: string[][];
+  guesses: GuessChar[][];
   currentInput: string[];
   word: string,
+  charUsage: {
+    [key: string]: LetterPos,
+  };
+}
+
+export interface GuessChar {
+  char: string;
+  state: LetterPos;
 }
 
 export interface WordleGuessRow {
@@ -14,13 +61,14 @@ export interface WordleGuessRow {
 
 export interface WordleGuessChar {
   char: string | null;
-  state: 'correct' | 'exists' | null;
+  state: LetterPos;
 }
 
 const initialState: WordleState = {
-  currentInput: ['A', 'B', 'C', 'D', 'E'],
+  currentInput: [],
   guesses: [],
   word: 'speck',
+  charUsage: {},
 };
 
 export const wordleSlice = createSlice({
@@ -42,8 +90,28 @@ export const wordleSlice = createSlice({
       }
 
       if (action.payload === 'enter' && state.currentInput.length === 5) {
-        state.guesses.push([...state.currentInput]);
+        const word = state.word.split('');
+        const guess = [...state.currentInput];
+        const result = getWordGuessResult(guess, word);
+        state.guesses.push([...result]);
         state.currentInput = [];
+
+        result.forEach((res) => {
+          const oldCharState = state.charUsage[res.char];
+          const bestState = getBestState(res.char, result);
+
+          if (oldCharState == null) {
+            state.charUsage = {
+              ...state.charUsage,
+              [res.char]: bestState.state,
+            };
+          } else {
+            state.charUsage = {
+              ...state.charUsage,
+              [res.char]: letterPosMap[res.state] < letterPosMap[oldCharState] ? oldCharState : res.state,
+            };
+          }
+        });
       }
     }
   }
@@ -51,6 +119,7 @@ export const wordleSlice = createSlice({
 
 export const selectCurrentInput = (state: RootState) => state.wordle.currentInput;
 export const selectGuesses = (state: RootState) => state.wordle.guesses;
+export const selectLetters = (state: RootState) => state.wordle.charUsage;
 export const selectWorldeRows = (state: RootState): WordleGuessRow[] => {
   const result: WordleGuessRow[] = [];
   const word = state.wordle.word.split('');
@@ -59,22 +128,14 @@ export const selectWorldeRows = (state: RootState): WordleGuessRow[] => {
     const guess = state.wordle.guesses[i];
 
     const guessRow: WordleGuessRow = {
-      chars: [],
+      chars: guess || Array.from(Array(5).keys()).map(() => {
+        return {
+          char: null,
+          state: LetterPos.notFound,
+        } as WordleGuessChar
+      }),
       state: guess ? 'done' : 'guess',
     };
-
-    for (let j = 0; j < 5; j++) {
-      const currentChar = (guess?.[j].toLowerCase() || null);
-      let charOnRightPosition = (currentChar && word.indexOf(currentChar) === j) || false;
-      const includesChar = (currentChar && word.includes(currentChar)) || false;
-
-      const char: WordleGuessChar = {
-        char: currentChar,
-        state: charOnRightPosition ? 'correct' : includesChar ? 'exists' : null,
-      };
-
-      guessRow.chars.push(char);
-    }
 
     result.push(guessRow);
   }
@@ -84,11 +145,9 @@ export const selectWorldeRows = (state: RootState): WordleGuessRow[] => {
       state: 'guess',
       chars: Array.from(Array(5).keys()).map((_, i) => {
         const c = state.wordle.currentInput[i];
-        console.log('key', i, c);
-
         return {
           char: c,
-          state: null,
+          state: LetterPos.notFound,
         }
       })
     };
