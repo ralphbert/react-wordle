@@ -1,13 +1,109 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+:root {
+    --border-radius: 4px;
+    --color-success: #538d4e;
+    --color-warning: #c9b458;
+    --color-gray-1: #ccc;
+    --color-gray-2: #ddd;
+    --color-gray-3: #868686;
+    --font-monospace: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+    --font-default: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+    --font-size-sm: 0.8rem;
+}
+
+body {
+    margin: 0;
+    font-family: var(--font-default);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+    font-family: var(--font-monospace);
+}
+
+.copy-box {
+    border: 1px dashed var(--color-gray-1);
+    text-align: left;
+    padding: 0.5em 1em;
+    border-radius: var(--border-radius);
+}
+
+.keyboard {
+    margin-bottom: 1em;
+}
+
+.keyboard-row {
+
+}
+
+.keyboard-key {
+    background-color: var(--color-gray-1);
+    text-transform: uppercase;
+    border-radius: var(--border-radius);
+    padding: 1em 0.75em;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.keyboard-key:active {
+    background-color: var(--color-gray-2);
+}
+
+.keyboard-key.exists {
+    background-color: var(--color-warning);
+    color: #fff;
+}
+
+.keyboard-key.correct {
+    background-color: var(--color-success);
+    color: #fff;
+}
+
+.done .wordle-box {
+    background-color: var(--color-gray-3);
+    color: #fff;
+}
+
+.wordle-box {
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+.wordle-box.exists {
+    background-color: var(--color-warning);
+}
+
+.wordle-box.correct {
+    background-color: var(--color-success);
+}
+
+.delete-icon {
+    height: 1em;
+    width: 2em;
+    line-height: 0;
+    vertical-align: middle;
+}
+
+.copy-box {
+    font-size: var(--font-size-sm);
+}
+
+.copy-box h3 {
+    margin: 0 0 0.5em;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.mb-md {
+    margin-bottom: 2em;
+}
+
+.cursor-pointer {
+    cursor: pointer;
 }

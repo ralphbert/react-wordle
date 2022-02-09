@@ -1,39 +1,68 @@
-import { useState } from "react";
-import { Keyboard } from "../wordle/Keyboard";
-import { LetterPos, WordleGuessRow } from "../wordle/store/wordleSlice";
-import { WordleRow } from "../wordle/WordleRow";
+import {useState} from 'react';
+import {Keyboard} from '../keyboard/Keyboard';
+import {LetterPos, WordleGuessRow} from '../wordle/store/wordleSlice';
+import {WordleRow} from '../wordle/WordleRow';
+import {arrayWithLength, encode, wordLength} from '../../config';
+import {CopyBox} from './CopyBox';
+import {t} from '../../lib/lang';
+import {copy} from '../../lib/copy';
 
 export function Create() {
-  function onInput(char : string) {
-    //setWord(event.currentTarget.value.trim());
-    setWord(state => {
-      if (state.length >= 5) {
-        return state;
-      }
+    const [word, setWord] = useState('');
 
-      return state + char;
+    let url = '';
+
+    if (word.length === 5) {
+        url = `${window.location.href}start?word=${encode(word)}`;
+    }
+
+    function onInput(char: string): void {
+        setWord(state => {
+            if (state.length >= wordLength) {
+                return state;
+            }
+
+            return state + char;
+        });
+    }
+
+    function onEnter() {
+        if (url) {
+            copy(url);
+        }
+    }
+
+    function onDelete() {
+        setWord(state => {
+            const parts = state.split('');
+            parts.pop();
+            return parts.join('');
+        });
+    }
+
+    const chars = arrayWithLength(wordLength).map((i) => {
+        return word.charAt(i);
     });
-  }
 
-  const [word,
-    setWord] = useState('');
+    const wordleRow: WordleGuessRow = {
+        chars: chars
+            .map(c => ({char: c, state: LetterPos.notFound})),
+        state: 'guess'
+    };
 
-  const isInvalid = word.length !== 5;
+    return (
+        <div>
+            <h1>{t('createTitle')}</h1>
 
-  const wordleRow : WordleGuessRow = {
-    chars: word
-      .split('')
-      .map(c => ({char: c, state: LetterPos.notFound})),
-    state: 'guess'
-  };
+            <p>{t('createDescription')}</p>
 
-  return (
-    <div>
-      <h1>Create Wordle</h1>
+            <div className="mb-md">
+                <WordleRow row={wordleRow}/>
+            </div>
 
-      <WordleRow row={wordleRow}/>
+            <Keyboard onKeyPress={onInput} onEnter={onEnter} onDelete={onDelete}/>
 
-      <Keyboard onEnter={onInput}/>
-    </div>
-  )
+            {url && <CopyBox content={url}/>}
+        </div>
+    )
 }
