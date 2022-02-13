@@ -1,8 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
 import 'animate.css';
 import 'rc-notification/assets/index.css';
+import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import {Provider} from 'react-redux';
@@ -16,7 +16,7 @@ import {NotFound} from './features/not-found/NotFound';
 ReactDOM.render(
     <React.StrictMode>
         <Provider store={store}>
-            <BrowserRouter basename={process.env.BASENAME}>
+            <BrowserRouter basename={process.env.REACT_APP_BASENAME}>
                 <Routes>
                     <Route path="" element={<App/>}>
                         <Route path="start" element={<Start/>}/>

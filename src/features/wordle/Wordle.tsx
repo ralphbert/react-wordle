@@ -1,8 +1,8 @@
-import {Link} from 'react-router-dom';
 import {useAppDispatch, useAppSelector} from '../../store/hooks';
 import {Keyboard} from '../keyboard/Keyboard';
 import {
-    isValidWord, selectIsLost,
+    isValidWord,
+    selectIsLost,
     selectIsSuccess,
     selectLetters,
     selectWordleRows,
@@ -12,10 +12,14 @@ import {
 } from './store/wordleSlice';
 import {WordleRow} from './WordleRow';
 import {t} from '../../lib/lang';
-import {Modal} from '../modal/Modal';
 import {Success} from '../finish/Success';
 import {Failure} from '../finish/Failure';
 import {CreateLink} from './CreateLink';
+import {Support} from './Support';
+import {Bar} from '../bar/Bar';
+import {Link} from 'react-router-dom';
+import {Layout} from '../../ui/Layout';
+import {useEffect, useState} from 'react';
 
 export function Wordle() {
     const dispatch = useAppDispatch();
@@ -35,34 +39,60 @@ export function Wordle() {
         dispatch(wordleEnter());
     }
 
+
     const isValid = useAppSelector(isValidWord);
     const isSuccess = useAppSelector(selectIsSuccess);
     const isLost = useAppSelector(selectIsLost);
 
     const rows = useAppSelector(selectWordleRows);
     const charUsage = useAppSelector(selectLetters);
-    const linkToWordle = <CreateLink />;
+    const linkToWordle = <CreateLink/>;
+    const linkButton = <Link className="py-1 px-2 border border-solid border-gray-500 rounded"
+                             to="/">{t('createYourOwnButton')}</Link>;
+    const [show, setShow] = useState(false);
+
+    useEffect(() => {
+        if (isSuccess || isLost) {
+            const timeout = setTimeout(() => setShow(true), 1000);
+            return () => {
+                clearTimeout(timeout);
+                setShow(false);
+                console.log('clear timeout');
+            }
+        }
+    }, [isSuccess, isLost]);
 
     return (
         <>
             {(isValid) ? (
-                <div>
-                    <h1>{t('playTitle')}</h1>
-                    <div className="wordle" style={style}>
-                        {rows.map((row, i) => <WordleRow row={row} key={i}/>)}
-                    </div>
-                    <Keyboard charUsage={charUsage} onKeyPress={onKeyPress} onEnter={onEnter} onDelete={onDelete}/>
-                    {linkToWordle}
-
-                    { isSuccess && <Success /> }
-                    { isLost && <Failure /> }
-                </div>
+                <>
+                    <Layout header={
+                        <Bar rightContent={linkButton}>
+                            {t('playTitle')}
+                        </Bar>
+                    } main={
+                        <div>
+                            <div className="wordle" style={style}>
+                                {rows.map((row, i) => <WordleRow row={row} key={i}/>)}
+                            </div>
+                            {isSuccess && show && <Success/>}
+                            {isLost && show && <Failure/>}
+                        </div>
+                    } footer={
+                        <Keyboard charUsage={charUsage} onKeyPress={onKeyPress} onEnter={onEnter} onDelete={onDelete}/>
+                    }/>
+                </>
             ) : (
-                <div className="animate__animated animate__bounce">
-                    <h1>{t('errorInvalidWordTitle')}</h1>
-                    <p>{t('errorInvalidWord')}</p>
-                    <div>{linkToWordle}</div>
-                </div>
+                <Layout
+                    header={<Bar>{t('errorInvalidWordTitle')}</Bar>}
+                    main={
+                        <>
+                            <p className="animate__animated animate__bounce">{t('errorInvalidWord')}</p>
+                            <div className="my-2">{linkToWordle}</div>
+                        </>
+                    }
+                    footer={<Support/>}
+                />
             )}
         </>
     );

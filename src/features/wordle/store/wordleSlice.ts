@@ -1,6 +1,7 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 import {RootState} from '../../../store/store';
-import {arrayWithLength, decode, encode, guessCount, wordLength} from '../../../config';
+import {arrayWithLength, decode, guessCount, wordLength} from '../../../config';
+import {stateToChar} from '../../../lib/helpers';
 
 export enum LetterPos {
     unused = 'unused',
@@ -55,6 +56,7 @@ export interface GuessChar {
 export interface WordleGuessRow {
     chars: WordleGuessChar[];
     state: 'guess' | 'done';
+    animated?: boolean;
 }
 
 export interface WordleGuessChar {
@@ -149,16 +151,27 @@ export const selectIsSuccess = (state: RootState) => {
     const wordle = state.wordle;
 
     if (wordle.guesses.length >= 1) {
+        console.log('wordle', wordle);
         const lastGuess = wordle.guesses[wordle.guesses.length - 1];
 
-        return wordle.word === lastGuess.join('');
+        return wordle.word === lastGuess.map(w => w.char).join('');
     }
+
+    return false;
+}
+export const selectResultGrid = (state: RootState) => {
+    const wordle = state.wordle;
+
+    return wordle.guesses.map(word => {
+        return word.map(char => stateToChar(char.state));
+    });
 }
 
 export const selectIsLost = (state: RootState) => {
     const wordle = state.wordle;
     return wordle.guesses.length === guessCount && !selectIsSuccess(state);
 }
+
 export const selectWordleRows = (state: RootState): WordleGuessRow[] => {
     const result: WordleGuessRow[] = [];
 
@@ -173,6 +186,7 @@ export const selectWordleRows = (state: RootState): WordleGuessRow[] => {
                 } as WordleGuessChar
             }),
             state: guess ? 'done' : 'guess',
+            animated: (i === state.wordle.guesses.length - 1 && state.wordle.guesses.length !== 0)
         };
 
         result.push(guessRow);

@@ -2,10 +2,13 @@ import {useState} from 'react';
 import {Keyboard} from '../keyboard/Keyboard';
 import {LetterPos, WordleGuessRow} from '../wordle/store/wordleSlice';
 import {WordleRow} from '../wordle/WordleRow';
-import {arrayWithLength, encode, wordLength} from '../../config';
+import {arrayWithLength, wordLength} from '../../config';
 import {CopyBox} from './CopyBox';
 import {t} from '../../lib/lang';
 import {copy} from '../../lib/copy';
+import {getWordUrl} from '../../lib/helpers';
+import {Bar} from '../bar/Bar';
+import {Layout} from '../../ui/Layout';
 
 export function Create() {
     const [word, setWord] = useState('');
@@ -13,7 +16,7 @@ export function Create() {
     let url = '';
 
     if (word.length === 5) {
-        url = `${window.location.href}start?word=${encode(word)}`;
+        url = getWordUrl(word);
     }
 
     function onInput(char: string): void {
@@ -51,18 +54,26 @@ export function Create() {
     };
 
     return (
-        <div>
-            <h1>{t('createTitle')}</h1>
+        <Layout
+            header={
+                <Bar>{t('createTitle')}</Bar>
+            }
+            main={
+                <div className="mx-2">
 
-            <p>{t('createDescription')}</p>
+                    <p className="mb-4">{t('createDescription')}</p>
 
-            <div className="mb-md">
-                <WordleRow row={wordleRow}/>
-            </div>
+                    <div className="mb-8">
+                        <WordleRow row={wordleRow}/>
+                    </div>
 
-            <Keyboard onKeyPress={onInput} onEnter={onEnter} onDelete={onDelete}/>
-
-            {url && <CopyBox content={url}/>}
-        </div>
+                    {url && <CopyBox content={url}/>}
+                </div>
+            }
+            footer={
+                <Keyboard onKeyPress={onInput} onEnter={onEnter} onDelete={onDelete}/>
+            }
+        >
+        </Layout>
     )
 }

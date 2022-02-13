@@ -3,13 +3,10 @@ import {Outlet} from 'react-router-dom';
 import './App.css';
 
 function App() {
-    const style = {
-        margin: '2em auto',
-        width: '320px'
-    };
+    const style = { };
 
     return (
-        <div className="text-center" style={style}>
+        <div className="app text-center" style={style}>
             <Outlet/>
         </div>
     );

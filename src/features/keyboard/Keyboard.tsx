@@ -21,11 +21,13 @@ export function Keyboard({onEnter, onKeyPress, onDelete, charUsage}: KeyboardPro
     }
 
     return (
-        <div className="keyboard">
-            {chars.map(
-                (row, index) =>
-                    <KeyboardRow key={index} charUsage={charUsage} chars={row} onKeyPress={onInput}/>
-            )}
+        <div>
+            <div className="keyboard">
+                {chars.map(
+                    (row, index) =>
+                        <KeyboardRow key={index} charUsage={charUsage} chars={row} onKeyPress={onInput}/>
+                )}
+            </div>
         </div>
     )
 }

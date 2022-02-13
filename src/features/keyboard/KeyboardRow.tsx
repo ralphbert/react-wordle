@@ -9,11 +9,6 @@ export interface KeyboardRowProps {
 
 export function KeyboardRow({chars, onKeyPress, charUsage}: KeyboardRowProps) {
     const rowStyle = {
-        display: 'flex',
-        gap: '0.5em',
-        marginBottom: '0.5em',
-        justifyContent: 'center',
-        alignItems: 'center'
     };
 
     return (
