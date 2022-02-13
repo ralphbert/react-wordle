@@ -19,8 +19,7 @@ export function resultGridToString(resultGrid: string[][]): string {
 }
 
 export function getWordUrl(word: string): string {
-    console.log('bla', window.location)
-    return `${getUrl()}start?word=${encode(word)}`;
+    return `${getUrl()}/start?word=${encode(word)}`;
 }
 
 export function getUrl() {

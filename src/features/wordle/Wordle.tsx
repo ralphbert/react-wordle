@@ -57,7 +57,6 @@ export function Wordle() {
             return () => {
                 clearTimeout(timeout);
                 setShow(false);
-                console.log('clear timeout');
             }
         }
     }, [isSuccess, isLost]);

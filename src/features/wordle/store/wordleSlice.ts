@@ -74,7 +74,7 @@ export interface WordleState {
 const initialState: WordleState = {
     currentInput: [],
     guesses: [],
-    word: 'katze',
+    word: '',
     charUsage: {},
 };
 
@@ -123,8 +123,6 @@ export const wordleSlice = createSlice({
         wordleStart: (state, action: PayloadAction<string>) => {
             const word = decode(action.payload);
 
-            console.log('wordleStart', word);
-
             state.currentInput = [];
             state.guesses = [];
             state.charUsage = {};
@@ -151,7 +149,6 @@ export const selectIsSuccess = (state: RootState) => {
     const wordle = state.wordle;
 
     if (wordle.guesses.length >= 1) {
-        console.log('wordle', wordle);
         const lastGuess = wordle.guesses[wordle.guesses.length - 1];
 
         return wordle.word === lastGuess.map(w => w.char).join('');

@@ -5,7 +5,7 @@ export const chars = [
 ];
 
 export const wordLength = 5;
-export const guessCount = 2;
+export const guessCount = 6;
 
 export const arrayWithLength = (length: number) => Array.from(Array(length).keys());
 
